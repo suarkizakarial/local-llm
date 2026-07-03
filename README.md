@@ -67,14 +67,16 @@ close to Claude Opus.
 
 You'd buy 4x RTX 6000 Pros for a total of **384GB of VRAM**.
 
-The current best model in my experience that you can run here is a quantized, REAP'd
-version of `GLM-5.2`:
+
+##### Current best models for 4x RTX6kPRO
+
 [`GLM-5.2-Int8Mix-NVFP4-REAP-594B`](https://huggingface.co/madeby561/GLM-5.2-Int8Mix-NVFP4-REAP-594B)
 
 | Date | Best model | My config |
 |---|---|---|
 | 2026-07 | [`GLM-5.2-Int8Mix-NVFP4-REAP-594B`](https://huggingface.co/madeby561/GLM-5.2-Int8Mix-NVFP4-REAP-594B) | [Runner config](./runners/GLM-5.2-594B) |
 
+##### Other approaches
 
 Note: these are my recommendations, but there are other completely valid ways to spend
 your money. For example, there's probably also some regime where rather than getting 4
@@ -129,6 +131,34 @@ about a day.
 
 I found the PCI switch's builtin fan very loud and seemingly useless, so I simply
 unplugged that from the board.
+
+
+### Hoarding model weights
+
+I save all model weights locally on a ZFS filesystem that's replicated across the two
+8TB drives, which is mounted at `~/storage`.
+
+For any model I want to run, I first download the model using 
+```
+hf download <model-name> --local-dir ~/storage/<model-name>
+```
+
+### Running models
+
+Once the model weights are cached locally, I have a specific directory for each model
+that contains a `docker-compose.yml` file that cordones off the running of each model
+to its own Docker container.
+
+You can find these configurations in [`./runners/`](./runners).
+
+Each container mounts in `~/storage/models` in read-only mode to obtain the weights
+that I've cached locally.
+
+I then use `opencode` hosted on a VM on another machine to access the models once
+they're serving on `http://clank.j.co:5000`. 
+
+I use a network-internal DNS server to point `clank.j.co` to the LLM machine, but you
+could simply do http://<llm-machine-ip>:5000 too.
 
 
 ### Getting the PCI switches to work properly
