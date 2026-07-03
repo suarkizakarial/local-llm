@@ -1,6 +1,6 @@
 # GLM-5.2 NVFP4-REAP-594B — vLLM serving on 4× RTX PRO 6000 (Blackwell, sm120, TP4)
-# Config: DCP4 + MTP5 + FLASHINFER_MLA_SPARSE_SM120 + b12x MoE.
-# Measured single-stream: ~80 t/s codegen (MTP5 accept ~4.0-4.6), ~240k KV context.
+# Config: DCP2 + MTP5 + FLASHINFER_MLA_SPARSE_SM120 + b12x MoE.
+# Measured single-stream: ~80 t/s codegen (MTP5 accept ~4.0-4.6), ~153K KV context.
 #
 # Model:  madeby561/GLM-5.2-Int8Mix-NVFP4-REAP-594B  (public on HF) — mount it at /mnt/models,
 #         or override MODEL to wherever you put it.
@@ -11,7 +11,7 @@
 #   DCP_SIZE=2  ->  ~153K ctx / ~86 t/s      (this file's default — more context for ~10% decode)
 #   DCP_SIZE=4  ->  ~277K ctx / ~56 t/s
 #   Set MAX_MODEL_LEN to your boot log's "GPU KV cache size: N tokens" (DCP2 pool ~152,960 here).
-#
+#   FlashInfer-sm120 works at DCP1 & DCP2 on TP4; DCP4 needs a head-chunk patch (gathers 64 heads).
 services:
   glm52:
     image: ${IMAGE:-voipmonitor/vllm:eldritch-enlightenment-v8722ac7-b12x8ce61f9-cu132-20260629}
@@ -69,14 +69,14 @@ services:
       PORT: "5000"
       TP_SIZE: "4"
       DCP_SIZE: "${DCP_SIZE:-4}"
-      MTP_TOKENS: "${MTP_TOKENS:-5}"
+      MTP_TOKENS: "${MTP_TOKENS:-3}"
       DRAFT_SAMPLE_METHOD: "${DRAFT_SAMPLE_METHOD:-probabilistic}"
-      # ATTN_BACKEND: "${ATTN_BACKEND:-B12X_MLA_SPARSE}"
-      ATTN_BACKEND: "${ATTN_BACKEND:-FLASHINFER_MLA_SPARSE_SM120}"
-      GPU_MEMORY_UTILIZATION: "${GPU_MEMORY_UTILIZATION:-0.95}"
-      MAX_MODEL_LEN: "${MAX_MODEL_LEN:-245000}"
+      ATTN_BACKEND: "${ATTN_BACKEND:-B12X_MLA_SPARSE}"
+      # ATTN_BACKEND: "${ATTN_BACKEND:-FLASHINFER_MLA_SPARSE_SM120}"
+      GPU_MEMORY_UTILIZATION: "${GPU_MEMORY_UTILIZATION:-0.96}"
+      MAX_MODEL_LEN: "${MAX_MODEL_LEN:-460000}"
       MAX_NUM_SEQS: "${MAX_NUM_SEQS:-8}"
-      MAX_NUM_BATCHED_TOKENS: "8192"
+      MAX_NUM_BATCHED_TOKENS: "4096"
       MAX_CUDAGRAPH_CAPTURE_SIZE: "${MAX_CUDAGRAPH_CAPTURE_SIZE:-32}"
       GLM52_INDEX_TOPK_PATTERN: FFFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSS
     command:

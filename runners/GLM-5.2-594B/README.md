@@ -1,7 +1,7 @@
 # GLM-5.2-594B
 
 GLM-5.2 NVFP4-REAP-594B: vLLM serving on 4× RTX PRO 6000 (Blackwell, sm120, TP4)
-Measured single-stream: ~80 t/s codegen, ~240k KV context.
+Measured single-stream: ~80 t/s codegen, ~460k KV context.
 
 DCP4 + MTP5 + FLASHINFER_MLA_SPARSE_SM120 + b12x MoE
 
