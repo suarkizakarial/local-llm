@@ -10,6 +10,13 @@ intelligence? How about $40k?
 If Dario and Altman are giving you heartburn (they should be), read on to figure out
 how to run this new kind of computing locally.
 
+In this repo you'll find
+
+- the hardware I use to run SOTA locally,
+  - why I bought what and little-known SECRETS for configuring it,
+- how I run speech-to-text (STT) locally,
+- ready-to-run configuration for running models I think are good within Docker containers.
+
 ## Contents
 
 | Section | TL;DR |
@@ -25,17 +32,18 @@ how to run this new kind of computing locally.
 | [GPU power limiting](#gpu-power-limiting) | Running $46k of silicon on a 110V circuit |
 | [Result](#result) | Gen4 line rate: 27.5/50.4 GB/s, sub-µs latency |
 | [`runners/`](./runners) | Ready-to-run serving configs: [GLM-5.2-594B](./runners/GLM-5.2-594B): vLLM docker-compose, DCP4+MTP5, ~80 t/s @ 240k ctx |
+| [`runners/stt`](./runners/stt) | Ready-to-run speech-to-text config with `whisper-large-v3` |
 | [`tools/`](./tools) | [`measure-gpu-speed.sh`](./tools/measure-gpu-speed.sh): P2P bandwidth/latency benchmark |
 | [Resources](#resources) | rtx6kpro repo, c-payne |
 
 ## My setup
 
-![my rig](./images/rig.png)
-
 I was lucky/dumb enough to buy 4x RTX Pro 6000s back when they were cheaper. Because
 RAM is now so expensive, I opted to build a last-gen DDR4 system to host these cards,
 the parts for which I got off eBay. This allowed me to keep base system cost reasonable
 while still getting a lot of VRAM.
+
+![my rig](./images/rig.png)
 
 Another somewhat unusual thing I did was to use PCIe4 switches (from c-payne.com). This
 allows the GPUs to communicate to one another "directly" at wire speeds during the
@@ -59,6 +67,11 @@ You can also run SOTA speech-to-text (STT) with
 [`whisper-large-v3`](https://huggingface.co/openai/whisper-large-v3), which I find very
 useful. That's the model - you'd then access it with my cross-platform [`stt`
 harness](https://github.com/jamesob/stt).
+
+I've found local STT surprisingly useful - and I feel comfortable using it, unlike a
+hosted equivalent. You can find a ready-to-run config in
+[`./runners/stt`](./runners/stt) that only assumes the presence of ~11GB of VRAM on an
+Nvidia GPU.
 
 #### ~$40k
 

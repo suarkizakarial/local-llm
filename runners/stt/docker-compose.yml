@@ -1,0 +1,26 @@
+services:
+  whisper:
+    build: .
+    ports:
+      - "8201:8000"
+    volumes:
+      - huggingface-cache:/root/.cache/huggingface
+    ipc: host
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
+    command:
+      - --model
+      - openai/whisper-large-v3
+      - --gpu-memory-utilization
+      - "0.45"
+      - --max-model-len
+      - "448"
+
+volumes:
+  huggingface-cache:
