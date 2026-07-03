@@ -55,7 +55,7 @@ My particular BOM is detailed below.
 A great way to go is 2x RTX 3090s for a total of **48GB VRAM** total. You can then run
 [Qwen3.6-27B](https://huggingface.co/Qwen/Qwen3.6-27B), which is an awesome model.
 
-You can also run SOTA speed-to-text with
+You can also run SOTA speech-to-text (STT) with
 [`whisper-large-v3`](https://huggingface.co/openai/whisper-large-v3), which I find very
 useful. That's the model - you'd then access it with my cross-platform [`stt`
 harness](https://github.com/jamesob/stt).
