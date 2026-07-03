@@ -87,8 +87,6 @@ You'd buy 4x RTX 6000 Pros for a total of **384GB of VRAM**.
 
 ##### Current best models for 4x RTX6kPRO
 
-[`GLM-5.2-Int8Mix-NVFP4-REAP-594B`](https://huggingface.co/madeby561/GLM-5.2-Int8Mix-NVFP4-REAP-594B)
-
 | Date | Best model | My config |
 |---|---|---|
 | 2026-07 | [`GLM-5.2-Int8Mix-NVFP4-REAP-594B`](https://huggingface.co/madeby561/GLM-5.2-Int8Mix-NVFP4-REAP-594B) | [Runner config](./runners/GLM-5.2-594B) |
