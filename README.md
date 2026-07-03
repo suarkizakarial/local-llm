@@ -29,7 +29,7 @@ In this repo you'll find
 | [Base system](#base-system) | Last-gen EPYC + eBay DDR4 for $5.6k |
 | [GPUs](#gpus) | 4× RTX PRO 6000, 384GB VRAM, where the money went |
 | [c-payne switch sub-BOM](#c-payne-pcie-gen4-switch-sub-bom-c-paynecom) | Indie PCIe switching so GPUs talk peer-to-peer |
-| [GPU enclosure](#gpu-enclosure) | A day of carpentry |
+| [GPU mount](#gpu-mount) | A day of carpentry |
 | [Making the switch behave](#getting-the-pci-switches-to-work-properly) | BIOS bifurcation, link speed, ASPM |
 | [Kernel / GRUB params](#kernel--grub-parameters) | `iommu=off` or NCCL hangs |
 | [ACS disable](#acs-disable-critical-for-switch-p2p) | Keep P2P traffic inside the switch fabric |
@@ -53,6 +53,8 @@ Another somewhat unusual thing I did was to use PCIe4 switches (from c-payne.com
 allows the GPUs to communicate to one another "directly" at wire speeds during the
 allreduce step in tensor parallelism, rather than having to send all data through the
 PCI root complex. The upshot of this is reduced latency between the cards.
+
+![switch](./images/switch.png)
 
 Consequently, I'm spending money on VRAM (where it counts) rather than on a PCIe5/DDR5
 base system, which is terrifically expensive as of July 2026.
@@ -104,6 +106,8 @@ and use that as the slow, big brain to drive Qwen3.7-27b to do the rote tasks qu
 
 Here's the hardware I wound up purchasing for the 4x RTX 6000 pro machine.
 
+![enclousure](./images/enclosure.png)
+
 ### Base system
 
 A modest, last-gen EPYC system purchased in parts almost entirely from eBay.
@@ -137,12 +141,14 @@ A modest, last-gen EPYC system purchased in parts almost entirely from eBay.
 | SlimSAS SFF-8654 8i cable — PCIe gen4 | 2 | ~30 | Each carries x8; pair = x16 upstream |
 | **Total** | | | **~€1,220 (~$1,330 USD)** |
 
-### GPU enclosure
+![switch2](./images/switch2.png)
+
+### GPU mount
 
 I had to custom fabricate a wood enclosure for the PCI switch and GPUs, which took
 about a day.
 
-![enclousure](./images/enclosure.png)
+![carpentry](./images/carpentry.png)
 
 I found the PCI switch's builtin fan very loud and seemingly useless, so I simply
 unplugged that from the board.
@@ -175,6 +181,28 @@ they're serving on `http://clank.j.co:5000`.
 I use a network-internal DNS server to point `clank.j.co` to the LLM machine, but you
 could simply do `http://<llm-machine-ip>:5000` too.
 
+
+### The harness itself
+
+I clanked up a model that basically just creates a tmux session for each directory in a
+VM, which then runs an `opencode` instance that backs up to the inference machine's
+HTTP API (`http://clank.j.co:5000`).
+
+![clankhouse](./images/clankhouse.png)
+
+One key to making the opensource models good is tooling them properly; a summary of my
+`skills/` is:
+
+- camofox, kagi.com API key, and searXNG for web browsing and search,
+- Telegram bot for communication and alerting,
+- a local private Gitea instance for collaborating on source code.
+
+The clanker will either work with me interactively in a session, or can be farmed off
+to work on Gitea issues and file PRs there.
+
+All this happens in a sandboxed VM where the only communication back to the host system
+happens via a shared filesystem mount, so the thing can go ham and install whatever it
+wants.
 
 ### Getting the PCI switches to work properly
 
