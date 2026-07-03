@@ -1,6 +1,8 @@
-# Everything I know about running SOTA LLMs locally
+# jamesob's guide to running SOTA LLMs locally
 
 *Note: nothing in this README aside from the tables was written by AI.*
+
+---
 
 Have $2k burning a hole in your pocket and want some local, state-of-the-art machine
 intelligence? How about $40k?
@@ -148,7 +150,7 @@ Without `iommu=off`, NCCL hangs on multi-GPU P2P.
 ## ACS Disable (critical for switch P2P)
 
 With ACS enabled (default), P2P traffic gets bounced through the CPU root port
-instead of staying inside the switch fabric — negating the switch entirely.
+instead of staying inside the switch fabric, negating the switch entirely.
 `pcie_acs_override` requires a patched kernel, so we disable via setpci at runtime.
 
 ```bash
@@ -188,7 +190,12 @@ WantedBy=multi-user.target
 Verify: `lspci -vvv | grep ACSCtl` should show all minus signs, and
 `nvidia-smi topo -m` should show **PIX** between all four GPUs (not PHB/NODE).
 
+Use [`./tools/measure-gpu-speed.sh`](./tools) to measure this easily.
+
 ## GPU Power Limiting
+
+In order to avoid installing a 220V circuit, I (probably unwisely) run this rig on a
+single 110V circuit, but I power regulate the cards. 
 
 Persistence mode + power cap applied at boot via systemd
 (install-gpu-power-limit.sh):
@@ -204,42 +211,13 @@ single-1700W-PSU phase (before the 240V circuit), cards ran at ~260W
 
 Verify: `nvidia-smi --query-gpu=index,power.limit,power.draw --format=csv`
 
-## NCCL Environment
-
-```bash
-export NCCL_P2P_LEVEL=PHB
-export NCCL_IB_DISABLE=1
-export NCCL_MIN_NCHANNELS=8
-export NCCL_ALLOC_P2P_NET_LL_BUFFERS=1
-export OMP_NUM_THREADS=8
-export SAFETENSORS_FAST_GPU=1
-```
-
 ## Result
 
 Upstream: Gen4 x16 (~30 GB/s to CPU). P2P through switch: **27.5 GB/s
-unidirectional / 50.4 GB/s bidirectional, 0.37–0.45 µs latency** — Gen4 line
+unidirectional / 50.4 GB/s bidirectional, 0.37–0.45 µs latency**, i.e. Gen4 line
 rate. Note: lspci may still show downstream GPU links as "2.5GT/s (downgraded)"
-at idle if ASPM is active anywhere; this is cosmetic — links retrain to Gen4
+at idle if ASPM is active anywhere; this is cosmetic. Links retrain to Gen4
 under load.
-
-
-### Operating the GPUs
-
-In order to avoid installing a 220V circuit, I (probably unwisely) run this rig on a
-single 110V circuit, but I power regulate the cards. 
-
-I have a script that automatically runs `sudo nvidia-smi -pl 350` on boot.
-
-In order 
-
-## Notes
-
-- Software: Debian 13 Trixie, NVIDIA 595.58.03 open kernel modules, vLLM/SGLang TP4
-- Measured P2P through switch: ~27.5 GB/s unidirectional / ~50 GB/s bidirectional (Gen4 max), 0.37–0.45 µs latency
-- BIOS gotchas: set slot bifurcation to **x16** (not x8/x8) for switch upstream; disable ASPM L1 (causes idle links to report Gen1 2.5GT/s); enable Re-Size BAR; disable SR-IOV
-- RTX PRO 6000 Blackwell has **no NVLink**: all GPU-to-GPU traffic rides the PCIe switch
-- Blackwell cards are Gen5 devices negotiating down to Gen4 on this platform
 
 ## Resources
 
