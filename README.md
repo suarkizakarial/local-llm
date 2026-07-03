@@ -25,7 +25,7 @@ how to run this new kind of computing locally.
 | [GPU power limiting](#gpu-power-limiting) | Running $46k of silicon on a 110V circuit |
 | [Result](#result) | Gen4 line rate: 27.5/50.4 GB/s, sub-µs latency |
 | [`runners/`](./runners) | Ready-to-run serving configs: [GLM-5.2-594B](./runners/GLM-5.2-594B): vLLM docker-compose, DCP4+MTP5, ~80 t/s @ 240k ctx |
-| [`tools/`](./tools) | [`measure-gpu-speed.sh`](./tools/measure-gpu-speed.sh) — one-shot P2P bandwidth/latency benchmark |
+| [`tools/`](./tools) | [`measure-gpu-speed.sh`](./tools/measure-gpu-speed.sh): P2P bandwidth/latency benchmark |
 | [Resources](#resources) | rtx6kpro repo, c-payne |
 
 ## My setup
