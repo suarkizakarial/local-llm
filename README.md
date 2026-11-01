@@ -37,7 +37,6 @@ In this repo you'll find
 | [Result](#result) | Gen4 line rate: 27.5/50.4 GB/s, sub-µs latency |
 | [`runners/`](./runners) | Ready-to-run serving configs: [GLM-5.2-594B](./runners/GLM-5.2-594B): vLLM docker-compose, DCP4+MTP5, ~80 t/s @ 460k ctx |
 | [`runners/stt`](./runners/stt) | Ready-to-run speech-to-text config with `cohere-transcribe` |
-| [`tools/`](./tools) | [`measure-gpu-speed.sh`](./tools/measure-gpu-speed.sh): P2P bandwidth/latency benchmark |
 | [Resources](#resources) | rtx6kpro repo, c-payne |
 
 ## My setup
